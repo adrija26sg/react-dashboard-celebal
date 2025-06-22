@@ -182,7 +182,7 @@ const Dashboard = () => {
   return (
     <Box>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', mb: 3 }}>
-        Dashboard Overview
+        Welcome to your dashboard!
       </Typography>
       
       {/* Statistics Cards */}

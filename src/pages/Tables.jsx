@@ -43,6 +43,7 @@ import {
   flexRender,
   createColumnHelper,
 } from '@tanstack/react-table'
+import { CSVLink } from 'react-csv'
 
 const columnHelper = createColumnHelper()
 
@@ -193,6 +194,9 @@ const Tables = () => {
   const [openDialog, setOpenDialog] = useState(false)
   const [selectedRole, setSelectedRole] = useState('')
   const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedRows, setSelectedRows] = useState([])
+  const [page, setPage] = useState(0)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
 
   const table = useReactTable({
     data,
@@ -222,19 +226,59 @@ const Tables = () => {
     return filtered
   }, [selectedRole, selectedStatus])
 
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setSelectedRows(filteredData.map((row) => row.id))
+    } else {
+      setSelectedRows([])
+    }
+  }
+
+  const handleSelectRow = (id) => {
+    setSelectedRows((prev) =>
+      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+    )
+  }
+
+  const handleDeleteSelected = () => {
+    // Implement your delete logic here (e.g., update data state)
+    alert(`Delete rows: ${selectedRows.join(', ')}`)
+    setSelectedRows([])
+  }
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage)
+  }
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10))
+    setPage(0)
+  }
+
+  const paginatedData = filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
           Data Tables
         </Typography>
-        <Button
-          variant="contained"
-          startIcon={<Add />}
-          onClick={() => setOpenDialog(true)}
-        >
-          Add User
-        </Button>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="contained"
+            startIcon={<Add />}
+            onClick={() => setOpenDialog(true)}
+          >
+            Add User
+          </Button>
+          <CSVLink data={filteredData} filename="users.csv" style={{ textDecoration: 'none' }}>
+            <Button variant="outlined">Export CSV</Button>
+          </CSVLink>
+          {selectedRows.length > 0 && (
+            <Button variant="outlined" color="error" onClick={handleDeleteSelected}
+              >Delete Selected</Button>
+          )}
+        </Box>
       </Box>
 
       {/* Filters and Search */}
@@ -305,38 +349,52 @@ const Tables = () => {
       {/* Table */}
       <Card>
         <CardContent>
-          <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
-            <Table>
+          <TableContainer component={Paper} sx={{ boxShadow: 'none', maxHeight: 400 }}>
+            <Table stickyHeader>
               <TableHead>
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableCell
-                        key={header.id}
-                        sx={{
-                          fontWeight: 600,
-                          backgroundColor: 'grey.50',
-                          cursor: header.column.getCanSort() ? 'pointer' : 'default',
-                        }}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                          {header.column.getCanSort() && (
-                            <Sort fontSize="small" />
-                          )}
-                        </Box>
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
+                <TableRow sx={{ backgroundColor: '#23243a' }}>
+                  <TableCell padding="checkbox" sx={{ backgroundColor: '#23243a', color: '#fff', borderBottom: '2px solid #30314a' }}>
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.length === filteredData.length && filteredData.length > 0}
+                      onChange={handleSelectAll}
+                    />
+                  </TableCell>
+                  {table.getHeaderGroups()[0].headers.map((header) => (
+                    <TableCell
+                      key={header.id}
+                      sx={{
+                        fontWeight: 700,
+                        backgroundColor: '#23243a',
+                        color: '#fff',
+                        borderBottom: '2px solid #30314a',
+                        cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                      }}
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getCanSort() && (
+                          <Sort fontSize="small" />
+                        )}
+                      </Box>
+                    </TableCell>
+                  ))}
+                </TableRow>
               </TableHead>
               <TableBody>
-                {filteredData.map((row) => (
-                  <TableRow key={row.id} hover>
+                {paginatedData.map((row) => (
+                  <TableRow key={row.id} hover selected={selectedRows.includes(row.id)}>
+                    <TableCell padding="checkbox">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(row.id)}
+                        onChange={() => handleSelectRow(row.id)}
+                      />
+                    </TableCell>
                     <TableCell>
                       <Avatar sx={{ bgcolor: 'primary.main' }}>
                         {row.avatar}
@@ -388,6 +446,21 @@ const Tables = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 2 }}>
+            <Typography variant="body2" sx={{ mr: 2 }}>
+              Rows per page:
+            </Typography>
+            <select value={rowsPerPage} onChange={handleChangeRowsPerPage} style={{ marginRight: 16 }}>
+              {[5, 10, 25].map((rows) => (
+                <option key={rows} value={rows}>{rows}</option>
+              ))}
+            </select>
+            <Button onClick={() => handleChangePage(null, Math.max(page - 1, 0))} disabled={page === 0}>&lt;</Button>
+            <Typography variant="body2" sx={{ mx: 1 }}>
+              {page + 1} / {Math.ceil(filteredData.length / rowsPerPage)}
+            </Typography>
+            <Button onClick={() => handleChangePage(null, Math.min(page + 1, Math.ceil(filteredData.length / rowsPerPage) - 1))} disabled={page >= Math.ceil(filteredData.length / rowsPerPage) - 1}>&gt;</Button>
+          </Box>
         </CardContent>
       </Card>
 
