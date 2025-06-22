@@ -1,0 +1,437 @@
+import React, { useState, useMemo } from 'react'
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Chip,
+  Avatar,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Grid,
+} from '@mui/material'
+import {
+  Search,
+  Add,
+  Edit,
+  Delete,
+  FilterList,
+  Sort,
+} from '@mui/icons-material'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  flexRender,
+  createColumnHelper,
+} from '@tanstack/react-table'
+
+const columnHelper = createColumnHelper()
+
+const data = [
+  {
+    id: 1,
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    role: 'Admin',
+    status: 'Active',
+    lastLogin: '2024-01-15',
+    avatar: 'JD',
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    email: 'jane.smith@example.com',
+    role: 'User',
+    status: 'Active',
+    lastLogin: '2024-01-14',
+    avatar: 'JS',
+  },
+  {
+    id: 3,
+    name: 'Mike Johnson',
+    email: 'mike.johnson@example.com',
+    role: 'Editor',
+    status: 'Inactive',
+    lastLogin: '2024-01-10',
+    avatar: 'MJ',
+  },
+  {
+    id: 4,
+    name: 'Sarah Wilson',
+    email: 'sarah.wilson@example.com',
+    role: 'User',
+    status: 'Active',
+    lastLogin: '2024-01-13',
+    avatar: 'SW',
+  },
+  {
+    id: 5,
+    name: 'David Brown',
+    email: 'david.brown@example.com',
+    role: 'Admin',
+    status: 'Active',
+    lastLogin: '2024-01-12',
+    avatar: 'DB',
+  },
+  {
+    id: 6,
+    name: 'Emily Davis',
+    email: 'emily.davis@example.com',
+    role: 'Editor',
+    status: 'Inactive',
+    lastLogin: '2024-01-08',
+    avatar: 'ED',
+  },
+]
+
+const columns = [
+  columnHelper.accessor('avatar', {
+    header: 'Avatar',
+    cell: (info) => (
+      <Avatar sx={{ bgcolor: 'primary.main' }}>
+        {info.getValue()}
+      </Avatar>
+    ),
+  }),
+  columnHelper.accessor('name', {
+    header: 'Name',
+    cell: (info) => (
+      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+        {info.getValue()}
+      </Typography>
+    ),
+  }),
+  columnHelper.accessor('email', {
+    header: 'Email',
+    cell: (info) => (
+      <Typography variant="body2" color="textSecondary">
+        {info.getValue()}
+      </Typography>
+    ),
+  }),
+  columnHelper.accessor('role', {
+    header: 'Role',
+    cell: (info) => (
+      <Chip
+        label={info.getValue()}
+        size="small"
+        color={info.getValue() === 'Admin' ? 'error' : info.getValue() === 'Editor' ? 'warning' : 'default'}
+        variant="outlined"
+      />
+    ),
+  }),
+  columnHelper.accessor('status', {
+    header: 'Status',
+    cell: (info) => (
+      <Chip
+        label={info.getValue()}
+        size="small"
+        color={info.getValue() === 'Active' ? 'success' : 'error'}
+        variant="outlined"
+      />
+    ),
+  }),
+  columnHelper.accessor('lastLogin', {
+    header: 'Last Login',
+    cell: (info) => (
+      <Typography variant="body2" color="textSecondary">
+        {info.getValue()}
+      </Typography>
+    ),
+  }),
+  columnHelper.accessor('id', {
+    header: 'Actions',
+    cell: (info) => (
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <IconButton size="small" color="primary">
+          <Edit fontSize="small" />
+        </IconButton>
+        <IconButton size="small" color="error">
+          <Delete fontSize="small" />
+        </IconButton>
+      </Box>
+    ),
+  }),
+]
+
+const statusColors = {
+  active: '#38ef7d',
+  inactive: '#ff6b6b',
+  pending: '#fee140',
+  completed: '#4facfe',
+}
+
+const priorityColors = {
+  low: '#38ef7d',
+  medium: '#fee140',
+  high: '#ff6b6b',
+  critical: '#ee5a24',
+}
+
+const Tables = () => {
+  const [globalFilter, setGlobalFilter] = useState('')
+  const [sorting, setSorting] = useState([])
+  const [openDialog, setOpenDialog] = useState(false)
+  const [selectedRole, setSelectedRole] = useState('')
+  const [selectedStatus, setSelectedStatus] = useState('')
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: {
+      globalFilter,
+      sorting,
+    },
+    onGlobalFilterChange: setGlobalFilter,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  })
+
+  const filteredData = useMemo(() => {
+    let filtered = data
+
+    if (selectedRole) {
+      filtered = filtered.filter(item => item.role === selectedRole)
+    }
+
+    if (selectedStatus) {
+      filtered = filtered.filter(item => item.status === selectedStatus)
+    }
+
+    return filtered
+  }, [selectedRole, selectedStatus])
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+          Data Tables
+        </Typography>
+        <Button
+          variant="contained"
+          startIcon={<Add />}
+          onClick={() => setOpenDialog(true)}
+        >
+          Add User
+        </Button>
+      </Box>
+
+      {/* Filters and Search */}
+      <Card sx={{ mb: 3 }}>
+        <CardContent>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} md={4}>
+              <TextField
+                fullWidth
+                placeholder="Search users..."
+                value={globalFilter}
+                onChange={(e) => setGlobalFilter(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  value={selectedRole}
+                  label="Role"
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                >
+                  <MenuItem value="">All Roles</MenuItem>
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Editor">Editor</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={3}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={selectedStatus}
+                  label="Status"
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                >
+                  <MenuItem value="">All Status</MenuItem>
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} md={2}>
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<FilterList />}
+                onClick={() => {
+                  setSelectedRole('')
+                  setSelectedStatus('')
+                }}
+              >
+                Clear
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
+
+      {/* Table */}
+      <Card>
+        <CardContent>
+          <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
+            <Table>
+              <TableHead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableCell
+                        key={header.id}
+                        sx={{
+                          fontWeight: 600,
+                          backgroundColor: 'grey.50',
+                          cursor: header.column.getCanSort() ? 'pointer' : 'default',
+                        }}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <Sort fontSize="small" />
+                          )}
+                        </Box>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHead>
+              <TableBody>
+                {filteredData.map((row) => (
+                  <TableRow key={row.id} hover>
+                    <TableCell>
+                      <Avatar sx={{ bgcolor: 'primary.main' }}>
+                        {row.avatar}
+                      </Avatar>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                        {row.name}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="textSecondary">
+                        {row.email}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.role}
+                        size="small"
+                        color={row.role === 'Admin' ? 'error' : row.role === 'Editor' ? 'warning' : 'default'}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={row.status}
+                        size="small"
+                        color={row.status === 'Active' ? 'success' : 'error'}
+                        variant="outlined"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="textSecondary">
+                        {row.lastLogin}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton size="small" color="primary">
+                          <Edit fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" color="error">
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </CardContent>
+      </Card>
+
+      {/* Add User Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Add New User</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <TextField fullWidth label="Name" />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField fullWidth label="Email" type="email" />
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel>Role</InputLabel>
+                <Select label="Role">
+                  <MenuItem value="Admin">Admin</MenuItem>
+                  <MenuItem value="Editor">Editor</MenuItem>
+                  <MenuItem value="User">User</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select label="Status">
+                  <MenuItem value="Active">Active</MenuItem>
+                  <MenuItem value="Inactive">Inactive</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+          <Button variant="contained" onClick={() => setOpenDialog(false)}>
+            Add User
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  )
+}
+
+export default Tables 
