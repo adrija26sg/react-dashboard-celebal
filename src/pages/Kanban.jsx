@@ -286,123 +286,170 @@ const Kanban = () => {
           variant="contained"
           startIcon={<Add />}
           onClick={handleAddTask}
+          sx={{
+            background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            color: '#fff',
+            fontWeight: 600,
+            borderRadius: 2,
+            boxShadow: '0 4px 16px rgba(79,172,254,0.15)',
+            px: 3,
+            py: 1.2,
+            '&:hover': {
+              background: 'linear-gradient(135deg, #00f2fe 0%, #4facfe 100%)',
+              boxShadow: '0 8px 32px rgba(79,172,254,0.25)',
+            },
+          }}
         >
           Add Task
         </Button>
       </Box>
 
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Grid container spacing={3}>
-          {Object.values(columns).map((column) => (
-            <Grid item xs={12} sm={6} lg={3} key={column.id}>
-              <Card sx={{ height: '100%' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <Box
-                      sx={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '50%',
-                        background: column.gradient,
-                        mr: 1,
-                      }}
-                    />
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                      {column.title}
-                    </Typography>
-                    <Chip
-                      label={column.tasks.length}
-                      size="small"
-                      sx={{ backgroundColor: column.color + '20', color: column.color }}
-                    />
-                  </Box>
-
-                  <Droppable droppableId={column.id}>
-                    {(provided) => (
+      <Box sx={{ overflowX: 'auto', pb: 2 }}>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Grid container spacing={3} sx={{ minWidth: 900 }}>
+            {Object.values(columns).map((column) => (
+              <Grid item xs={12} sm={6} md={3} key={column.id}>
+                <Card
+                  sx={{
+                    background: 'rgba(255,255,255,0.08)',
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)',
+                    border: '1px solid rgba(255,255,255,0.10)',
+                    borderRadius: 1,
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
+                    minHeight: 500,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    p: 2,
+                  }}
+                >
+                  <CardContent sx={{ pb: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       <Box
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        sx={{ minHeight: 200 }}
-                      >
-                        {column.tasks.map((task, index) => (
-                          <Draggable key={task.id} draggableId={task.id} index={index}>
-                            {(provided, snapshot) => (
-                              <Card
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                sx={{
-                                  mb: 2,
-                                  cursor: 'grab',
-                                  transform: snapshot.isDragging ? 'rotate(5deg)' : 'none',
-                                  boxShadow: snapshot.isDragging ? 4 : 1,
-                                }}
-                              >
-                                <CardContent sx={{ p: 2 }}>
-                                  <Box {...provided.dragHandleProps} sx={{ mb: 1 }}>
-                                    <DragIndicator sx={{ color: 'grey.500', fontSize: 16 }} />
-                                  </Box>
-                                  
-                                  <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-                                    {task.title}
-                                  </Typography>
-                                  
-                                  <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                                    {task.description}
-                                  </Typography>
+                        sx={{
+                          width: 14,
+                          height: 14,
+                          borderRadius: '50%',
+                          background: column.gradient,
+                          mr: 1,
+                        }}
+                      />
+                      <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700, fontSize: 20 }}>
+                        {column.title}
+                      </Typography>
+                      <Chip
+                        label={column.tasks.length}
+                        size="small"
+                        sx={{ backgroundColor: column.color + '20', color: column.color, fontWeight: 700 }}
+                      />
+                    </Box>
 
-                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                                    <Avatar sx={{ width: 24, height: 24, fontSize: 12, mr: 1 }}>
-                                      {task.avatar}
-                                    </Avatar>
-                                    <Typography variant="caption" color="textSecondary">
-                                      {task.assignee}
-                                    </Typography>
-                                  </Box>
-
-                                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                                    <Chip
-                                      label={task.priority}
-                                      size="small"
-                                      sx={{
-                                        backgroundColor: priorityColors[task.priority] + '20',
-                                        color: priorityColors[task.priority],
-                                        fontSize: '0.7rem',
-                                      }}
-                                    />
-                                    <Box sx={{ display: 'flex', gap: 0.5 }}>
-                                      <IconButton
-                                        size="small"
-                                        onClick={() => handleEditTask(task, column.id)}
-                                      >
-                                        <Edit fontSize="small" />
-                                      </IconButton>
+                    <Droppable droppableId={column.id}>
+                      {(provided) => (
+                        <Box
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          sx={{ minHeight: 200 }}
+                        >
+                          {column.tasks.map((task, index) => (
+                            <Draggable key={task.id} draggableId={task.id} index={index}>
+                              {(provided, snapshot) => (
+                                <Card
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  sx={{
+                                    mb: 2,
+                                    cursor: 'grab',
+                                    borderRadius: 1,
+                                    boxShadow: snapshot.isDragging ? '0 8px 32px rgba(79,172,254,0.25)' : '0 2px 8px rgba(0,0,0,0.10)',
+                                    background: 'rgba(255,255,255,0.13)',
+                                    border: snapshot.isDragging ? '2px solid #4facfe' : '1px solid rgba(255,255,255,0.10)',
+                                    transition: 'box-shadow 0.2s, border 0.2s',
+                                  }}
+                                >
+                                  <CardContent sx={{ p: 2 }}>
+                                    <Box {...provided.dragHandleProps} sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
+                                      <DragIndicator sx={{ color: 'grey.500', fontSize: 16, mr: 1 }} />
+                                      <Typography variant="subtitle2" sx={{ fontWeight: 700, fontSize: 16 }}>
+                                        {task.title}
+                                      </Typography>
                                     </Box>
-                                  </Box>
-
-                                  <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                                    <Schedule sx={{ fontSize: 14, mr: 0.5, color: 'text.secondary' }} />
-                                    <Typography variant="caption" color="textSecondary">
-                                      {task.dueDate}
+                                    <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                                      {task.description}
                                     </Typography>
-                                  </Box>
-                                </CardContent>
-                              </Card>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </Box>
-                    )}
-                  </Droppable>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </DragDropContext>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 1, gap: 1 }}>
+                                      <Avatar sx={{ width: 24, height: 24, fontSize: 12, mr: 1, bgcolor: '#23243a', color: '#fff' }}>
+                                        {task.avatar}
+                                      </Avatar>
+                                      <Typography variant="caption" color="textSecondary">
+                                        {task.assignee}
+                                      </Typography>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                                      <Chip
+                                        label={task.priority}
+                                        size="small"
+                                        sx={{
+                                          backgroundColor: priorityColors[task.priority] + '20',
+                                          color: priorityColors[task.priority],
+                                          fontWeight: 700,
+                                          fontSize: '0.8rem',
+                                        }}
+                                      />
+                                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                        <Flag sx={{ fontSize: 16, color: priorityColors[task.priority] }} />
+                                        <Schedule sx={{ fontSize: 14, color: 'text.secondary' }} />
+                                        <Typography variant="caption" color="textSecondary">
+                                          {task.dueDate}
+                                        </Typography>
+                                      </Box>
+                                      <Box sx={{ display: 'flex', gap: 0.5 }}>
+                                        <IconButton size="small" onClick={() => handleEditTask(task, column.id)}>
+                                          <Edit fontSize="small" />
+                                        </IconButton>
+                                      </Box>
+                                    </Box>
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </Box>
+                      )}
+                    </Droppable>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </DragDropContext>
+      </Box>
 
       {/* Task Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            background: 'rgba(30, 32, 48, 0.98)',
+            backdropFilter: 'blur(12px)',
+            WebkitBackdropFilter: 'blur(12px)',
+            borderRadius: 2,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.25)',
+            color: '#fff',
+          },
+        }}
+        BackdropProps={{
+          sx: {
+            background: 'rgba(20, 22, 34, 0.7)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+          },
+        }}
+      >
         <DialogTitle>
           {selectedTask ? 'Edit Task' : 'Add New Task'}
         </DialogTitle>
