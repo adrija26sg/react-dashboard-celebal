@@ -201,7 +201,7 @@ const Dashboard = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
                 boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
-                borderRadius: 4,
+                borderRadius: 2,
                 '&::before': {
                   content: '""',
                   position: 'absolute',
@@ -257,7 +257,7 @@ const Dashboard = () => {
       {/* Charts Section */}
       <Grid container spacing={4} sx={{ mb: 4 }}>
         <Grid item xs={12} lg={8}>
-          <Card sx={{ minHeight: 370, borderRadius: 4 }}>
+          <Card sx={{ minHeight: 370, borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ fontSize: 20 }}>
                 Sales Overview
@@ -281,20 +281,20 @@ const Dashboard = () => {
           </Card>
         </Grid>
         <Grid item xs={12} lg={4}>
-          <Card sx={{ minHeight: 370, borderRadius: 4 }}>
+          <Card sx={{ minHeight: 370, borderRadius: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom sx={{ fontSize: 20 }}>
                 Traffic Sources
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={90}
+                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={70}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -305,6 +305,17 @@ const Dashboard = () => {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
+              {/* Custom Legend */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2, flexWrap: 'wrap' }}>
+                {pieData.map((entry, idx) => (
+                  <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 14, height: 14, borderRadius: '50%', background: entry.color, mr: 0.5 }} />
+                    <Typography variant="body2" sx={{ color: entry.color, fontWeight: 500 }}>
+                      {entry.name}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -314,6 +325,7 @@ const Dashboard = () => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Card>
+            
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Recent Activity

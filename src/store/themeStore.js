@@ -75,7 +75,7 @@ const lightTheme = createTheme({
     },
   },
   shape: {
-    borderRadius: 16,
+    borderRadius: 12,
   },
   components: {
     MuiCard: {
@@ -231,7 +231,7 @@ const darkTheme = createTheme({
     },
   },
   shape: {
-    borderRadius: 16,
+    borderRadius: 12,
   },
   components: {
     MuiCard: {

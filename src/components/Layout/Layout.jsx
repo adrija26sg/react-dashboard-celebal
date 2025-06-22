@@ -31,7 +31,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { themeStore } from '../../store/themeStore'
 
-const drawerWidth = 240
+const drawerWidth = 270
 
 const menuItems = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
@@ -170,9 +170,9 @@ const Layout = ({ children }) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
-          width: { md: `calc(100% - ${drawerWidth}px)` },
+          p: { xs: 1, sm: 2, md: 4 },          width: { md: `calc(100% - ${drawerWidth}px)` },
           mt: '64px',
+          
         }}
       >
         {children}

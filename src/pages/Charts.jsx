@@ -33,6 +33,7 @@ import {
   Radar,
   ComposedChart,
   Scatter,
+  ScatterChart
 } from 'recharts'
 
 const monthlyData = [
@@ -46,10 +47,10 @@ const monthlyData = [
 ]
 
 const pieData = [
-  { name: 'Desktop', value: 400, color: '#8884d8' },
-  { name: 'Mobile', value: 300, color: '#82ca9d' },
-  { name: 'Tablet', value: 200, color: '#ffc658' },
-  { name: 'Other', value: 100, color: '#ff7300' },
+  { name: 'Desktop', value: 400, color: '#4facfe' },
+  { name: 'Mobile', value: 300, color: '#667eea' },
+  { name: 'Tablet', value: 200, color: '#11998e' },
+  { name: 'Other', value: 100, color: '#fa709a' },
 ]
 
 const radarData = [
@@ -70,7 +71,7 @@ const scatterData = [
   { x: 110, y: 280, z: 200 },
 ]
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8']
+const COLORS = pieData.map(d => d.color)
 
 const Charts = () => {
   const theme = useTheme()
@@ -89,16 +90,16 @@ const Charts = () => {
               <Line
                 type="monotone"
                 dataKey="sales"
-                stroke={theme.palette.primary.main}
+                stroke="#4facfe"
                 strokeWidth={3}
-                dot={{ fill: theme.palette.primary.main, strokeWidth: 2, r: 6 }}
+                dot={{ fill: '#4facfe', strokeWidth: 2, r: 6 }}
               />
               <Line
                 type="monotone"
                 dataKey="profit"
-                stroke={theme.palette.secondary.main}
+                stroke="#764ba2"
                 strokeWidth={3}
-                dot={{ fill: theme.palette.secondary.main, strokeWidth: 2, r: 6 }}
+                dot={{ fill: '#764ba2', strokeWidth: 2, r: 6 }}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -115,15 +116,15 @@ const Charts = () => {
                 type="monotone"
                 dataKey="sales"
                 stackId="1"
-                stroke={theme.palette.primary.main}
-                fill={theme.palette.primary.main + '20'}
+                stroke="#4facfe"
+                fill="#4facfe20"
               />
               <Area
                 type="monotone"
                 dataKey="profit"
                 stackId="1"
-                stroke={theme.palette.secondary.main}
-                fill={theme.palette.secondary.main + '20'}
+                stroke="#764ba2"
+                fill="#764ba220"
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -136,8 +137,8 @@ const Charts = () => {
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="sales" fill={theme.palette.primary.main} />
-              <Bar dataKey="profit" fill={theme.palette.secondary.main} />
+              <Bar dataKey="sales" fill="#4facfe" />
+              <Bar dataKey="profit" fill="#764ba2" />
             </BarChart>
           </ResponsiveContainer>
         )
@@ -152,14 +153,14 @@ const Charts = () => {
               <Area
                 type="monotone"
                 dataKey="customers"
-                fill={theme.palette.primary.main + '20'}
-                stroke={theme.palette.primary.main}
+                fill="#4facfe20"
+                stroke="#4facfe"
               />
-              <Bar dataKey="orders" fill={theme.palette.secondary.main} />
+              <Bar dataKey="orders" fill="#764ba2" />
               <Line
                 type="monotone"
                 dataKey="sales"
-                stroke={theme.palette.error.main}
+                stroke="#ff6b6b"
                 strokeWidth={3}
               />
             </ComposedChart>
@@ -211,15 +212,15 @@ const Charts = () => {
               <Typography variant="h6" gutterBottom>
                 Traffic Sources
               </Typography>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                   <Pie
                     data={pieData}
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
+                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                    outerRadius={70}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -230,6 +231,17 @@ const Charts = () => {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
+              {/* Custom Legend */}
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2, flexWrap: 'wrap' }}>
+                {pieData.map((entry, idx) => (
+                  <Box key={entry.name} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 14, height: 14, borderRadius: '50%', background: entry.color, mr: 0.5 }} />
+                    <Typography variant="body2" sx={{ color: entry.color, fontWeight: 500 }}>
+                      {entry.name}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -249,15 +261,15 @@ const Charts = () => {
                   <Radar
                     name="Current"
                     dataKey="A"
-                    stroke={theme.palette.primary.main}
-                    fill={theme.palette.primary.main + '20'}
+                    stroke="#4facfe"
+                    fill="#4facfe20"
                     fillOpacity={0.6}
                   />
                   <Radar
                     name="Target"
                     dataKey="B"
-                    stroke={theme.palette.secondary.main}
-                    fill={theme.palette.secondary.main + '20'}
+                    stroke="#764ba2"
+                    fill="#764ba220"
                     fillOpacity={0.6}
                   />
                   <Tooltip />
@@ -280,7 +292,7 @@ const Charts = () => {
                   <XAxis type="number" dataKey="x" name="x" />
                   <YAxis type="number" dataKey="y" name="y" />
                   <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                  <Scatter name="Data Points" data={scatterData} fill={theme.palette.primary.main} />
+                  <Scatter name="Data Points" data={scatterData} fill="#4facfe" />
                 </ScatterChart>
               </ResponsiveContainer>
             </CardContent>
