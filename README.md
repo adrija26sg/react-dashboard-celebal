@@ -1,6 +1,19 @@
 # React Admin Dashboard
 
 A modern, feature-rich React Admin Dashboard with customizable themes, interactive components, and beautiful visualizations.
+# Sneak Peek
+![image](https://github.com/user-attachments/assets/ac764a49-300a-446b-ad75-d2dc973ed4ef)
+### comes in 2 modes
+![image](https://github.com/user-attachments/assets/fb9b68fb-35b6-4230-b6b0-5654a0819a20)
+
+![image](https://github.com/user-attachments/assets/a94b4aa0-b6bd-4b33-a3e0-fc27f2a3f6b8)
+![image](https://github.com/user-attachments/assets/076a7a02-7b79-48e6-8fb1-106c7da3a361)
+![image](https://github.com/user-attachments/assets/072e5884-82b6-44c1-a152-8fcc9fa01964)
+![image](https://github.com/user-attachments/assets/1eb75c8c-94c3-4d30-adfb-2c2e16ee8b34)
+
+
+
+
 
 ## 🚀 Features
 
